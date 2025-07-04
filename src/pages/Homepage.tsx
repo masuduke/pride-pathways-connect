@@ -21,7 +21,7 @@ const Homepage = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Why Choose <span className="bg-gradient-pride bg-clip-text text-transparent">PrideHealth</span>?
+                Why Choose <span className="bg-gradient-pride bg-clip-text text-transparent">Rongduno</span>?
               </h2>
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                 We're more than just a healthcare provider - we're your community, 
@@ -114,7 +114,7 @@ const Homepage = () => {
                     </div>
                   </div>
                   <p className="text-muted-foreground italic">
-                    "PrideHealth gave me the courage to be myself. The therapy sessions 
+                    "Rongduno gave me the courage to be myself. The therapy sessions 
                     helped me navigate coming out to my family, and the support groups 
                     connected me with amazing people."
                   </p>

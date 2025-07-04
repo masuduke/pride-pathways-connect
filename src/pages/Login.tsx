@@ -58,7 +58,7 @@ const Login = () => {
                 </h1>
               </div>
               <p className="text-lg text-muted-foreground">
-                Sign in to access your PrideHealth account
+                Sign in to access your Rongduno account
               </p>
             </div>
 

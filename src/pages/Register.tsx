@@ -56,7 +56,7 @@ const Register = () => {
     console.log("Creating account:", { ...formData, membershipId });
     
     toast({
-      title: "Welcome to PrideHealth!",
+      title: "Welcome to Rongduno!",
       description: `Your account has been created. Membership ID: ${membershipId}`,
     });
 
@@ -91,7 +91,7 @@ const Register = () => {
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Heart className="h-8 w-8 text-primary" />
                 <h1 className="text-3xl md:text-4xl font-bold">
-                  Join <span className="bg-gradient-pride bg-clip-text text-transparent">PrideHealth</span>
+                  Join <span className="bg-gradient-pride bg-clip-text text-transparent">Rongduno</span>
                 </h1>
               </div>
               <p className="text-lg text-muted-foreground">

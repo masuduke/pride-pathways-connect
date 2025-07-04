@@ -292,7 +292,7 @@ const BookService = () => {
                       If you have questions about booking or need assistance:
                     </p>
                     <p>📞 <strong>(555) 123-PRIDE</strong></p>
-                    <p>✉️ <strong>hello@pridehealth.org</strong></p>
+                    <p>✉️ <strong>hello@rongduno.org</strong></p>
                     <p className="mt-3 text-muted-foreground">
                       Our support team is available Monday-Friday, 9 AM - 7 PM
                     </p>

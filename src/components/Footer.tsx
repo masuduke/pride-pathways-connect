@@ -11,7 +11,7 @@ export const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Heart className="h-8 w-8" />
-              <span className="text-2xl font-bold">PrideHealth</span>
+              <span className="text-2xl font-bold">Rongduno</span>
             </div>
             <p className="text-primary-foreground/80 leading-relaxed">
               Creating a safe, inclusive space for LGBT+ healthcare and community support. 
@@ -94,7 +94,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4" />
-                <span className="text-primary-foreground/80">hello@pridehealth.org</span>
+                <span className="text-primary-foreground/80">hello@rongduno.org</span>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 mt-1" />
@@ -110,7 +110,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-primary-foreground/80 text-sm">
-            © 2024 PrideHealth. All rights reserved. Serving our community with pride.
+            © 2024 Rongduno. All rights reserved. Serving our community with pride.
           </p>
           <div className="flex gap-6 text-sm">
             <Link to="/privacy" className="text-primary-foreground/80 hover:text-primary-foreground transition-smooth">
