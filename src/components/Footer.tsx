@@ -90,7 +90,7 @@ export const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4" />
-                <span className="text-primary-foreground/80">(555) 123-PRIDE</span>
+                <span className="text-primary-foreground/80">+44 7404 792007</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-4 w-4" />
@@ -99,8 +99,8 @@ export const Footer = () => {
               <div className="flex items-start gap-3">
                 <MapPin className="h-4 w-4 mt-1" />
                 <span className="text-primary-foreground/80">
-                  123 Rainbow Avenue<br />
-                  Pride City, PC 12345
+                  34 Turner Street<br />
+                  London, E13 8JG
                 </span>
               </div>
             </div>
