@@ -14,6 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          is_online: boolean | null
+          meeting_url: string | null
+          notes: string | null
+          provider_id: string | null
+          scheduled_at: string
+          service_id: string
+          status: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_online?: boolean | null
+          meeting_url?: string | null
+          notes?: string | null
+          provider_id?: string | null
+          scheduled_at: string
+          service_id: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_online?: boolean | null
+          meeting_url?: string | null
+          notes?: string | null
+          provider_id?: string | null
+          scheduled_at?: string
+          service_id?: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      group_memberships: {
+        Row: {
+          group_id: string
+          id: string
+          is_active: boolean | null
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_memberships_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "support_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_memberships_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      group_sessions: {
+        Row: {
+          attendee_count: number | null
+          created_at: string
+          duration_minutes: number | null
+          group_id: string
+          id: string
+          location: string | null
+          meeting_url: string | null
+          notes: string | null
+          scheduled_at: string
+          topic: string | null
+          updated_at: string
+        }
+        Insert: {
+          attendee_count?: number | null
+          created_at?: string
+          duration_minutes?: number | null
+          group_id: string
+          id?: string
+          location?: string | null
+          meeting_url?: string | null
+          notes?: string | null
+          scheduled_at: string
+          topic?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attendee_count?: number | null
+          created_at?: string
+          duration_minutes?: number | null
+          group_id?: string
+          id?: string
+          location?: string | null
+          meeting_url?: string | null
+          notes?: string | null
+          scheduled_at?: string
+          topic?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_sessions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "support_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -52,6 +208,309 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      providers: {
+        Row: {
+          available_hours: Json | null
+          bio: string | null
+          created_at: string
+          id: string
+          license_number: string | null
+          specialty: string
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          available_hours?: Json | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          license_number?: string | null
+          specialty: string
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          available_hours?: Json | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          license_number?: string | null
+          specialty?: string
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "providers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          file_path: string | null
+          id: string
+          is_public: boolean | null
+          resource_type: string | null
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_path?: string | null
+          id?: string
+          is_public?: boolean | null
+          resource_type?: string | null
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_path?: string | null
+          id?: string
+          is_public?: boolean | null
+          resource_type?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price: number | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price?: number | null
+          service_type: Database["public"]["Enums"]["service_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price?: number | null
+          service_type?: Database["public"]["Enums"]["service_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      support_groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          facilitator_id: string | null
+          focus_area: string | null
+          id: string
+          is_active: boolean | null
+          is_virtual: boolean | null
+          location: string | null
+          max_members: number | null
+          meeting_schedule: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          facilitator_id?: string | null
+          focus_area?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_virtual?: boolean | null
+          location?: string | null
+          max_members?: number | null
+          meeting_schedule?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          facilitator_id?: string | null
+          focus_area?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_virtual?: boolean | null
+          location?: string | null
+          max_members?: number | null
+          meeting_schedule?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_groups_facilitator_id_fkey"
+            columns: ["facilitator_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_appointments: {
+        Row: {
+          created_at: string
+          id: string
+          is_anonymous: boolean | null
+          is_rapid_test: boolean | null
+          location: string | null
+          provider_id: string | null
+          scheduled_at: string
+          status: Database["public"]["Enums"]["appointment_status"] | null
+          test_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean | null
+          is_rapid_test?: boolean | null
+          location?: string | null
+          provider_id?: string | null
+          scheduled_at: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          test_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean | null
+          is_rapid_test?: boolean | null
+          location?: string | null
+          provider_id?: string | null
+          scheduled_at?: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          test_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_appointments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_appointments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      test_results: {
+        Row: {
+          created_at: string
+          follow_up_date: string | null
+          follow_up_required: boolean | null
+          id: string
+          notes: string | null
+          result_date: string | null
+          result_status: Database["public"]["Enums"]["test_status"]
+          test_appointment_id: string | null
+          test_date: string
+          test_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          follow_up_date?: string | null
+          follow_up_required?: boolean | null
+          id?: string
+          notes?: string | null
+          result_date?: string | null
+          result_status: Database["public"]["Enums"]["test_status"]
+          test_appointment_id?: string | null
+          test_date: string
+          test_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          follow_up_date?: string | null
+          follow_up_required?: boolean | null
+          id?: string
+          notes?: string | null
+          result_date?: string | null
+          result_status?: Database["public"]["Enums"]["test_status"]
+          test_appointment_id?: string | null
+          test_date?: string
+          test_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_results_test_appointment_id_fkey"
+            columns: ["test_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "test_appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_results_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user: {
         Row: {
@@ -108,6 +567,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      appointment_status: "scheduled" | "completed" | "cancelled" | "no_show"
+      service_type:
+        | "therapy"
+        | "hiv_testing"
+        | "support_group"
+        | "counseling"
+        | "peer_support"
+      test_status: "negative" | "positive" | "pending" | "inconclusive"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -236,6 +703,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      appointment_status: ["scheduled", "completed", "cancelled", "no_show"],
+      service_type: [
+        "therapy",
+        "hiv_testing",
+        "support_group",
+        "counseling",
+        "peer_support",
+      ],
+      test_status: ["negative", "positive", "pending", "inconclusive"],
     },
   },
 } as const
