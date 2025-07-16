@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Shield, Users, Heart, Calendar, Clock, Star, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import prideImage1 from "@/assets/pride-parade-1.jpg";
+import prideImage2 from "@/assets/pride-parade-2.jpg";
+import prideImage3 from "@/assets/pride-parade-3.jpg";
 
 const Services = () => {
   const services = [
@@ -77,6 +80,35 @@ const Services = () => {
       <Header />
       
       <main>
+        {/* Pride Images Gallery */}
+        <section className="py-8 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="overflow-hidden rounded-lg shadow-card hover:shadow-pride transition-smooth">
+                <img 
+                  src={prideImage1} 
+                  alt="London LGBT+ Pride Parade celebration with rainbow flags and diverse community"
+                  className="w-full h-48 object-cover hover:scale-105 transition-smooth"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg shadow-card hover:shadow-pride transition-smooth">
+                <img 
+                  src={prideImage2} 
+                  alt="Joyful LGBT+ pride celebration with dancing people and pride banners"
+                  className="w-full h-48 object-cover hover:scale-105 transition-smooth"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg shadow-card hover:shadow-pride transition-smooth">
+                <img 
+                  src={prideImage3} 
+                  alt="London LGBT+ pride march with colorful costumes and supportive crowd"
+                  className="w-full h-48 object-cover hover:scale-105 transition-smooth"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Hero Section */}
         <section className="py-20 bg-gradient-subtle">
           <div className="container mx-auto px-4 text-center">
