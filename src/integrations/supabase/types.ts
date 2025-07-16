@@ -170,42 +170,135 @@ export type Database = {
           },
         ]
       }
-      profiles: {
+      medical_history: {
         Row: {
-          avatar_url: string | null
-          bio: string | null
+          allergies: string[] | null
+          blood_type: string | null
           created_at: string
-          display_name: string | null
-          first_name: string | null
+          current_medications: string[] | null
+          family_medical_history: string | null
           id: string
-          last_name: string | null
-          phone: string | null
+          insurance_policy_number: string | null
+          insurance_provider: string | null
+          medical_conditions: string[] | null
+          notes: string | null
+          preferred_provider_gender: string | null
+          previous_surgeries: string[] | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          avatar_url?: string | null
-          bio?: string | null
+          allergies?: string[] | null
+          blood_type?: string | null
           created_at?: string
-          display_name?: string | null
-          first_name?: string | null
+          current_medications?: string[] | null
+          family_medical_history?: string | null
           id?: string
-          last_name?: string | null
-          phone?: string | null
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          medical_conditions?: string[] | null
+          notes?: string | null
+          preferred_provider_gender?: string | null
+          previous_surgeries?: string[] | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          allergies?: string[] | null
+          blood_type?: string | null
+          created_at?: string
+          current_medications?: string[] | null
+          family_medical_history?: string | null
+          id?: string
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          medical_conditions?: string[] | null
+          notes?: string | null
+          preferred_provider_gender?: string | null
+          previous_surgeries?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          appointment_preferences: Json | null
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          communication_preferences: Json | null
+          country: string | null
+          created_at: string
+          date_of_birth: string | null
+          display_name: string | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          first_name: string | null
+          gender: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          preferred_language: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          appointment_preferences?: Json | null
           avatar_url?: string | null
           bio?: string | null
+          city?: string | null
+          communication_preferences?: Json | null
+          country?: string | null
           created_at?: string
+          date_of_birth?: string | null
           display_name?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
           first_name?: string | null
+          gender?: string | null
           id?: string
           last_name?: string | null
           phone?: string | null
+          preferred_language?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          appointment_preferences?: Json | null
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          communication_preferences?: Json | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          display_name?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          first_name?: string | null
+          gender?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          preferred_language?: string | null
+          state?: string | null
           updated_at?: string
           user_id?: string
+          zip_code?: string | null
         }
         Relationships: []
       }
