@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Brain, Shield, Users, Calendar, Clock, DollarSign, User, CreditCard } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const BookService = () => {
   const { serviceId } = useParams();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const [bookingData, setBookingData] = useState({
     preferredDate: "",
@@ -23,6 +25,21 @@ const BookService = () => {
     insuranceProvider: "",
     paymentMethod: ""
   });
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setUser(user);
+  };
 
   const services = {
     "mental-health": {
@@ -71,23 +88,97 @@ const BookService = () => {
   const IconComponent = currentService.icon;
   const totalCost = currentService.basePrice * parseFloat(bookingData.duration || "1");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Generate booking ID
-    const bookingId = `BK${Date.now().toString().slice(-6)}`;
-    
-    console.log("Booking details:", {
-      serviceId,
-      bookingId,
-      ...bookingData,
-      totalCost
-    });
-    
-    toast({
-      title: "Booking Confirmed!",
-      description: `Your ${currentService.title} appointment has been scheduled. Booking ID: ${bookingId}`,
-    });
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to book an appointment.",
+        variant: "destructive"
+      });
+      navigate("/login");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // First, get the service from database or create if not exists
+      const serviceMapping = {
+        "mental-health": { name: "Mental Health Therapy", type: "therapy" as const },
+        "hiv-testing": { name: "HIV Testing & Support", type: "hiv_testing" as const },
+        "community-support": { name: "Community Support Groups", type: "support_group" as const }
+      };
+
+      const serviceInfo = serviceMapping[serviceId as keyof typeof serviceMapping];
+      
+      // Check if service exists in database
+      let { data: existingService } = await supabase
+        .from("services")
+        .select("id")
+        .eq("name", serviceInfo.name)
+        .single();
+
+      let actualServiceId = existingService?.id;
+
+      // Create service if it doesn't exist
+      if (!existingService) {
+        const { data: newService, error: serviceError } = await supabase
+          .from("services")
+          .insert({
+            name: serviceInfo.name,
+            service_type: serviceInfo.type,
+            duration_minutes: parseInt(bookingData.duration) * 60,
+            price: currentService.basePrice
+          })
+          .select("id")
+          .single();
+
+        if (serviceError) {
+          throw serviceError;
+        }
+        actualServiceId = newService.id;
+      }
+
+      // Create the appointment
+      const scheduledDateTime = new Date(`${bookingData.preferredDate}T${bookingData.preferredTime}:00`);
+      
+      const { data: appointment, error: appointmentError } = await supabase
+        .from("appointments")
+        .insert({
+          user_id: user.id,
+          service_id: actualServiceId,
+          scheduled_at: scheduledDateTime.toISOString(),
+          duration_minutes: parseInt(bookingData.duration) * 60,
+          notes: bookingData.specialRequests || null,
+          status: "scheduled"
+        })
+        .select()
+        .single();
+
+      if (appointmentError) {
+        throw appointmentError;
+      }
+
+      toast({
+        title: "Booking Confirmed!",
+        description: `Your ${currentService.title} appointment has been scheduled for ${bookingData.preferredDate} at ${bookingData.preferredTime}`,
+      });
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+
+    } catch (error: any) {
+      console.error("Booking error:", error);
+      toast({
+        title: "Booking Failed",
+        description: error.message || "Unable to book appointment. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -225,9 +316,15 @@ const BookService = () => {
                       />
                     </div>
 
-                    <Button type="submit" variant={currentService.variant} className="w-full" size="lg">
+                    <Button 
+                      type="submit" 
+                      variant={currentService.variant} 
+                      className="w-full" 
+                      size="lg"
+                      disabled={loading}
+                    >
                       <Calendar className="h-5 w-5" />
-                      Confirm Booking
+                      {loading ? "Booking..." : "Confirm Booking"}
                     </Button>
                   </form>
                 </CardContent>
