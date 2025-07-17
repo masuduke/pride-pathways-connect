@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, User, Mail, Lock, Calendar, UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -27,48 +30,73 @@ const Register = () => {
     return `${prefix}${timestamp}${random}`;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    // Basic validation
-    if (formData.password !== formData.confirmPassword) {
+    try {
+      // Basic validation
+      if (formData.password !== formData.confirmPassword) {
+        toast({
+          title: "Password Mismatch",
+          description: "Passwords do not match. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (formData.password.length < 8) {
+        toast({
+          title: "Password Too Short",
+          description: "Password must be at least 8 characters long.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Create user account with Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            display_name: `${formData.firstName} ${formData.lastName}`,
+            date_of_birth: formData.dateOfBirth
+          }
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Registration Failed",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data.user) {
+        toast({
+          title: "Welcome to Rongduno!",
+          description: "Your account has been created successfully. Please check your email to verify your account.",
+        });
+
+        // Navigate to login page
+        navigate("/login");
+      }
+
+    } catch (error) {
+      console.error("Registration error:", error);
       toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
+        title: "Registration Failed",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    if (formData.password.length < 8) {
-      toast({
-        title: "Password Too Short",
-        description: "Password must be at least 8 characters long.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Generate membership ID
-    const membershipId = generateMembershipId();
-    
-    // Simulate account creation (replace with actual backend call)
-    console.log("Creating account:", { ...formData, membershipId });
-    
-    toast({
-      title: "Welcome to Rongduno!",
-      description: `Your account has been created. Membership ID: ${membershipId}`,
-    });
-
-    // Reset form
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      dateOfBirth: ""
-    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -232,9 +260,9 @@ const Register = () => {
                   </div>
 
                   {/* Submit Button */}
-                  <Button type="submit" variant="pride" className="w-full" size="lg">
+                  <Button type="submit" variant="pride" className="w-full" size="lg" disabled={loading}>
                     <UserPlus className="h-5 w-5" />
-                    Create My Account
+                    {loading ? "Creating Account..." : "Create My Account"}
                   </Button>
                 </form>
 

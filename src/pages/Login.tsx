@@ -7,31 +7,57 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, Mail, Lock, LogIn, UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     
-    // Simulate login (replace with actual authentication)
-    console.log("Login attempt:", formData);
-    
-    toast({
-      title: "Welcome back!",
-      description: "You have been successfully logged in.",
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
 
-    // Reset form
-    setFormData({
-      email: "",
-      password: ""
-    });
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data.user) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been successfully logged in.",
+        });
+
+        // Navigate to home page
+        navigate("/");
+      }
+
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,9 +146,9 @@ const Login = () => {
                   </div>
 
                   {/* Submit Button */}
-                  <Button type="submit" variant="pride" className="w-full" size="lg">
+                  <Button type="submit" variant="pride" className="w-full" size="lg" disabled={loading}>
                     <LogIn className="h-5 w-5" />
-                    Sign In
+                    {loading ? "Signing In..." : "Sign In"}
                   </Button>
                 </form>
 
