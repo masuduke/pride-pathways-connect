@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -44,8 +45,8 @@ const Login = () => {
           description: "You have been successfully logged in.",
         });
 
-        // Navigate to home page
-        navigate("/");
+        // Navigate to dashboard instead of home page
+        navigate("/dashboard");
       }
 
     } catch (error) {
