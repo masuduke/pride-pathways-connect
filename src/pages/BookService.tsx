@@ -104,41 +104,24 @@ const BookService = () => {
     setLoading(true);
 
     try {
-      // First, get the service from database or create if not exists
+      // Get the service from database
       const serviceMapping = {
-        "mental-health": { name: "Mental Health Therapy", type: "therapy" as const },
-        "hiv-testing": { name: "HIV Testing & Support", type: "hiv_testing" as const },
-        "community-support": { name: "Community Support Groups", type: "support_group" as const }
+        "mental-health": "Mental Health Therapy",
+        "hiv-testing": "HIV Testing & Support", 
+        "community-support": "Community Support Groups"
       };
 
-      const serviceInfo = serviceMapping[serviceId as keyof typeof serviceMapping];
+      const serviceName = serviceMapping[serviceId as keyof typeof serviceMapping];
       
-      // Check if service exists in database
-      let { data: existingService } = await supabase
+      // Get service ID from database
+      const { data: service, error: serviceError } = await supabase
         .from("services")
         .select("id")
-        .eq("name", serviceInfo.name)
+        .eq("name", serviceName)
         .single();
 
-      let actualServiceId = existingService?.id;
-
-      // Create service if it doesn't exist
-      if (!existingService) {
-        const { data: newService, error: serviceError } = await supabase
-          .from("services")
-          .insert({
-            name: serviceInfo.name,
-            service_type: serviceInfo.type,
-            duration_minutes: parseInt(bookingData.duration) * 60,
-            price: currentService.basePrice
-          })
-          .select("id")
-          .single();
-
-        if (serviceError) {
-          throw serviceError;
-        }
-        actualServiceId = newService.id;
+      if (serviceError || !service) {
+        throw new Error("Service not found");
       }
 
       // Create the appointment
@@ -148,7 +131,7 @@ const BookService = () => {
         .from("appointments")
         .insert({
           user_id: user.id,
-          service_id: actualServiceId,
+          service_id: service.id,
           scheduled_at: scheduledDateTime.toISOString(),
           duration_minutes: parseInt(bookingData.duration) * 60,
           notes: bookingData.specialRequests || null,
