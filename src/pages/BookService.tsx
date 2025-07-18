@@ -23,7 +23,7 @@ const BookService = () => {
     duration: "1",
     specialRequests: "",
     insuranceProvider: "",
-    paymentMethod: ""
+    paymentMethod: "stripe"
   });
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -124,33 +124,39 @@ const BookService = () => {
         throw new Error("Service not found");
       }
 
-      // Create the appointment
+      // Process payment based on selected method
       const scheduledDateTime = new Date(`${bookingData.preferredDate}T${bookingData.preferredTime}:00`);
       
-      const { data: appointment, error: appointmentError } = await supabase
-        .from("appointments")
-        .insert({
-          user_id: user.id,
-          service_id: service.id,
-          scheduled_at: scheduledDateTime.toISOString(),
-          duration_minutes: parseInt(bookingData.duration) * 60,
-          notes: bookingData.specialRequests || null,
-          status: "scheduled"
-        })
-        .select()
-        .single();
+      if (currentService.basePrice > 0 && bookingData.paymentMethod !== "free") {
+        if (bookingData.paymentMethod === "stripe") {
+          await processStripePayment(service.id, scheduledDateTime);
+        } else if (bookingData.paymentMethod === "paypal") {
+          await processPayPalPayment(service.id, scheduledDateTime);
+        }
+      } else {
+        // Free service - create appointment directly
+        const { error } = await supabase
+          .from("appointments")
+          .insert({
+            user_id: user.id,
+            service_id: service.id,
+            scheduled_at: scheduledDateTime.toISOString(),
+            duration_minutes: parseInt(bookingData.duration) * 60,
+            notes: bookingData.specialRequests || null,
+            is_online: false
+          });
 
-      if (appointmentError) {
-        throw appointmentError;
+        if (error) {
+          throw error;
+        }
+
+        toast({
+          title: "Booking Confirmed!",
+          description: "Your appointment has been successfully booked.",
+        });
+
+        navigate("/dashboard");
       }
-
-      toast({
-        title: "Booking Confirmed!",
-        description: `Your ${currentService.title} appointment has been scheduled for ${bookingData.preferredDate} at ${bookingData.preferredTime}`,
-      });
-
-      // Redirect to dashboard
-      navigate("/dashboard");
 
     } catch (error: any) {
       console.error("Booking error:", error);
@@ -162,6 +168,54 @@ const BookService = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const processStripePayment = async (serviceId: string, scheduledDateTime: Date) => {
+    const appointmentData = {
+      serviceName: currentService.title,
+      date: bookingData.preferredDate,
+      time: bookingData.preferredTime,
+      duration: bookingData.duration,
+      specialRequests: bookingData.specialRequests,
+      insuranceProvider: bookingData.insuranceProvider
+    };
+
+    const { data, error } = await supabase.functions.invoke('stripe-payment', {
+      body: { 
+        amount: currentService.basePrice, 
+        serviceId: serviceId,
+        appointmentData 
+      }
+    });
+
+    if (error) throw error;
+    
+    // Redirect to Stripe Checkout
+    window.open(data.url, '_blank');
+  };
+
+  const processPayPalPayment = async (serviceId: string, scheduledDateTime: Date) => {
+    const appointmentData = {
+      serviceName: currentService.title,
+      date: bookingData.preferredDate,
+      time: bookingData.preferredTime,
+      duration: bookingData.duration,
+      specialRequests: bookingData.specialRequests,
+      insuranceProvider: bookingData.insuranceProvider
+    };
+
+    const { data, error } = await supabase.functions.invoke('paypal-payment', {
+      body: { 
+        amount: currentService.basePrice, 
+        serviceId: serviceId,
+        appointmentData 
+      }
+    });
+
+    if (error) throw error;
+    
+    // Redirect to PayPal
+    window.open(data.url, '_blank');
   };
 
   const handleChange = (field: string, value: string) => {
@@ -277,11 +331,15 @@ const BookService = () => {
                           <SelectTrigger>
                             <SelectValue placeholder="Select payment method" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="insurance">Insurance</SelectItem>
-                            <SelectItem value="credit-card">Credit Card</SelectItem>
-                            <SelectItem value="debit-card">Debit Card</SelectItem>
-                            <SelectItem value="cash">Cash</SelectItem>
+                         <SelectContent>
+                            {currentService.basePrice > 0 ? (
+                              <>
+                                <SelectItem value="stripe">Credit/Debit Card (Stripe)</SelectItem>
+                                <SelectItem value="paypal">PayPal</SelectItem>
+                              </>
+                            ) : (
+                              <SelectItem value="free">Free Service</SelectItem>
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
