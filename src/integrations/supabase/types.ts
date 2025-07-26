@@ -241,6 +241,7 @@ export type Database = {
           gender: string | null
           id: string
           last_name: string | null
+          membership_number: string | null
           phone: string | null
           preferred_language: string | null
           state: string | null
@@ -267,6 +268,7 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name?: string | null
+          membership_number?: string | null
           phone?: string | null
           preferred_language?: string | null
           state?: string | null
@@ -293,6 +295,7 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name?: string | null
+          membership_number?: string | null
           phone?: string | null
           preferred_language?: string | null
           state?: string | null
@@ -646,6 +649,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_membership_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
