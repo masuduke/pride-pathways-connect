@@ -171,7 +171,7 @@ const Login = () => {
                   <div className="space-y-2">
                     <Button variant="healthcare-green" size="sm" className="w-full" asChild>
                       <Link to="/crisis-support">
-                        Crisis Support Available 24/7
+                        Crisis Support Available 24/7 - +44 7404 792007
                       </Link>
                     </Button>
                     <Button variant="healthcare-teal" size="sm" className="w-full" asChild>

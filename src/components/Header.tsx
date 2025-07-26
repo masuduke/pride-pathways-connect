@@ -48,10 +48,15 @@ export const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-smooth">
-            <Heart className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold bg-gradient-pride bg-clip-text text-transparent">
-              Rongduno
+          <Link to="/" className="flex flex-col items-start gap-1 hover:opacity-80 transition-smooth">
+            <div className="flex items-center gap-2">
+              <Heart className="h-10 w-10 text-primary" />
+              <span className="text-2xl font-bold bg-gradient-pride bg-clip-text text-transparent">
+                Rongduno
+              </span>
+            </div>
+            <span className="text-sm text-muted-foreground font-medium ml-12">
+              The Largest LGBT+ Community for Bangladeshi
             </span>
           </Link>
 

@@ -17,6 +17,9 @@ export const Footer = () => {
               Creating a safe, inclusive space for LGBT+ healthcare and community support. 
               Your wellness is our priority.
             </p>
+            <p className="text-primary-foreground/60 text-sm font-medium">
+              Company Number: 15629001
+            </p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-primary-glow transition-smooth">
                 <Facebook className="h-5 w-5" />

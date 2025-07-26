@@ -35,6 +35,7 @@ const Dashboard = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     checkUser();
@@ -48,6 +49,15 @@ const Dashboard = () => {
       return;
     }
     setUser(user);
+    
+    // Fetch user profile with membership number
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("membership_number, display_name, first_name, last_name")
+      .eq("user_id", user.id)
+      .single();
+    
+    setProfile(profileData);
   };
 
   const fetchAppointments = async () => {
@@ -132,10 +142,22 @@ const Dashboard = () => {
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
               Welcome to Your Dashboard
+              {profile?.display_name && (
+                <span className="text-xl text-muted-foreground block mt-1">
+                  {profile.display_name}
+                </span>
+              )}
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-muted-foreground mb-2">
               Manage your appointments and access Rongduno services
             </p>
+            {profile?.membership_number && (
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 inline-block">
+                <p className="text-sm font-medium text-primary">
+                  Membership Number: <span className="font-bold">{profile.membership_number}</span>
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
