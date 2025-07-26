@@ -24,8 +24,8 @@ const Homepage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <div className="overflow-hidden rounded-lg shadow-card hover:shadow-pride transition-smooth">
                 <img 
-                  src={prideImage1} 
-                  alt="London LGBT+ Pride Parade celebration with rainbow flags and diverse community"
+                  src="/lovable-uploads/a48366ba-185a-4d49-93f9-b1fad233cab3.png" 
+                  alt="Rongduno community members at London Pride 2025 with rainbow banner"
                   className="w-full h-48 object-cover hover:scale-105 transition-smooth"
                 />
               </div>
