@@ -103,7 +103,7 @@ export const Footer = () => {
                 <MapPin className="h-4 w-4 mt-1" />
                 <span className="text-primary-foreground/80">
                   34 Turner Street<br />
-                  London, E13 8JG
+                  London, E1 2AS
                 </span>
               </div>
             </div>

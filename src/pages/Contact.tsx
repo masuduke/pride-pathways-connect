@@ -98,7 +98,7 @@ const Contact = () => {
                     <h3 className="font-semibold mb-1">Visit Us</h3>
                     <p className="text-muted-foreground">
                       34 Turner Street<br />
-                      London, E13 8JG<br />
+                      London, E1 2AS<br />
                       United Kingdom
                     </p>
                   </div>
