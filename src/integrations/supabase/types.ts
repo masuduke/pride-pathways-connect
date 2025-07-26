@@ -81,6 +81,45 @@ export type Database = {
           },
         ]
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          is_read: boolean
+          last_name: string
+          message: string
+          phone: string | null
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          is_read?: boolean
+          last_name: string
+          message: string
+          phone?: string | null
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          is_read?: boolean
+          last_name?: string
+          message?: string
+          phone?: string | null
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       group_memberships: {
         Row: {
           group_id: string
