@@ -66,6 +66,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "appointments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers_public_info"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "appointments_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
@@ -528,6 +535,13 @@ export type Database = {
             referencedRelation: "providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "support_groups_facilitator_id_fkey"
+            columns: ["facilitator_id"]
+            isOneToOne: false
+            referencedRelation: "providers_public_info"
+            referencedColumns: ["id"]
+          },
         ]
       }
       test_appointments: {
@@ -576,6 +590,13 @@ export type Database = {
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_appointments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers_public_info"
             referencedColumns: ["id"]
           },
           {
@@ -670,7 +691,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      providers_public_info: {
+        Row: {
+          bio: string | null
+          id: string | null
+          specialty: string | null
+        }
+        Insert: {
+          bio?: string | null
+          id?: string | null
+          specialty?: string | null
+        }
+        Update: {
+          bio?: string | null
+          id?: string | null
+          specialty?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       generate_membership_number: {
@@ -680,6 +718,14 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_public_provider_info: {
+        Args: { provider_ids: string[] }
+        Returns: {
+          bio: string
+          id: string
+          specialty: string
+        }[]
       }
       has_role: {
         Args: {
