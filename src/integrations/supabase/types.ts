@@ -66,13 +66,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "appointments_provider_id_fkey"
-            columns: ["provider_id"]
-            isOneToOne: false
-            referencedRelation: "providers_public_info"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "appointments_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
@@ -535,13 +528,6 @@ export type Database = {
             referencedRelation: "providers"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "support_groups_facilitator_id_fkey"
-            columns: ["facilitator_id"]
-            isOneToOne: false
-            referencedRelation: "providers_public_info"
-            referencedColumns: ["id"]
-          },
         ]
       }
       test_appointments: {
@@ -590,13 +576,6 @@ export type Database = {
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "providers"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_appointments_provider_id_fkey"
-            columns: ["provider_id"]
-            isOneToOne: false
-            referencedRelation: "providers_public_info"
             referencedColumns: ["id"]
           },
           {
@@ -691,24 +670,7 @@ export type Database = {
       }
     }
     Views: {
-      providers_public_info: {
-        Row: {
-          bio: string | null
-          id: string | null
-          specialty: string | null
-        }
-        Insert: {
-          bio?: string | null
-          id?: string | null
-          specialty?: string | null
-        }
-        Update: {
-          bio?: string | null
-          id?: string | null
-          specialty?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       generate_membership_number: {
@@ -724,6 +686,13 @@ export type Database = {
         Returns: {
           bio: string
           id: string
+          specialty: string
+        }[]
+      }
+      get_safe_provider_info: {
+        Args: { provider_id: string }
+        Returns: {
+          bio: string
           specialty: string
         }[]
       }
