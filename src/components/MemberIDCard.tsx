@@ -1,0 +1,270 @@
+import { useState, useRef, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Camera, Printer, Upload, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { format, addYears } from "date-fns";
+
+interface MemberIDCardProps {
+  profile: {
+    first_name?: string;
+    last_name?: string;
+    date_of_birth?: string;
+    membership_number?: string;
+    created_at?: string;
+  };
+  userId: string;
+}
+
+export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Load existing photo on mount
+  useEffect(() => {
+    loadMemberPhoto();
+  }, [userId]);
+
+  const loadMemberPhoto = async () => {
+    try {
+      setLoading(true);
+      const { data } = supabase.storage
+        .from('member-photos')
+        .getPublicUrl(`${userId}/profile-photo`);
+      
+      // Check if the image exists by trying to load it
+      const img = new Image();
+      img.onload = () => setPhotoUrl(data.publicUrl);
+      img.onerror = () => setPhotoUrl(null);
+      img.src = data.publicUrl;
+    } catch (error) {
+      console.error('Error loading photo:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadPhoto = async (file: File) => {
+    try {
+      setUploading(true);
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload an image file",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 5MB",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}/profile-photo.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('member-photos')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      await loadMemberPhoto();
+      
+      toast({
+        title: "Photo uploaded successfully",
+        description: "Your ID card photo has been updated"
+      });
+    } catch (error: any) {
+      console.error('Error uploading photo:', error);
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to upload photo",
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      uploadPhoto(file);
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const getExpirationDate = () => {
+    if (!profile.created_at) return "N/A";
+    const registrationDate = new Date(profile.created_at);
+    const expirationDate = addYears(registrationDate, 1);
+    return format(expirationDate, "MM/dd/yyyy");
+  };
+
+  const getDisplayName = () => {
+    if (profile.first_name && profile.last_name) {
+      return `${profile.first_name} ${profile.last_name}`;
+    }
+    return profile.first_name || profile.last_name || "Member";
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Print-only styles */}
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          
+          .id-card-print-area,
+          .id-card-print-area * {
+            visibility: visible;
+          }
+          
+          .id-card-print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3.375in;
+            height: 2.125in;
+            border: 2px solid #000;
+            background: white;
+          }
+          
+          .no-print {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Controls - Hidden when printing */}
+      <div className="flex gap-3 no-print">
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          variant="pride"
+          className="flex-1"
+        >
+          {uploading ? (
+            <>
+              <Upload className="h-4 w-4 animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            <>
+              <Camera className="h-4 w-4" />
+              {photoUrl ? "Change Photo" : "Upload Photo"}
+            </>
+          )}
+        </Button>
+        
+        <Button onClick={handlePrint} variant="healthcare">
+          <Printer className="h-4 w-4" />
+          Print ID Card
+        </Button>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
+
+      {/* ID Card */}
+      <Card className="id-card-print-area w-full max-w-md mx-auto shadow-pride border-2 border-primary/20 bg-gradient-subtle">
+        <CardContent className="p-4">
+          <div className="space-y-3">
+            {/* Header */}
+            <div className="text-center border-b border-primary/20 pb-2">
+              <h3 className="text-lg font-bold text-primary">RONGDUNO</h3>
+              <p className="text-xs text-muted-foreground">Member ID Card</p>
+            </div>
+
+            {/* Photo and Info Section */}
+            <div className="flex items-center gap-4">
+              {/* Photo */}
+              <div className="flex-shrink-0">
+                <div className="w-20 h-20 border-2 border-primary/20 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                  {loading ? (
+                    <div className="animate-pulse bg-muted-foreground/20 w-full h-full flex items-center justify-center">
+                      <User className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                  ) : photoUrl ? (
+                    <img
+                      src={photoUrl}
+                      alt="Member Photo"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-muted-foreground">
+                      <User className="h-8 w-8" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Member Info */}
+              <div className="flex-1 space-y-1">
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Name</p>
+                  <p className="text-sm font-semibold">{getDisplayName()}</p>
+                </div>
+                
+                {profile.date_of_birth && (
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">DOB</p>
+                    <p className="text-sm">{format(new Date(profile.date_of_birth), "MM/dd/yyyy")}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Membership Details */}
+            <div className="space-y-2 pt-2 border-t border-primary/20">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Member #</p>
+                  <p className="text-sm font-mono font-bold text-primary">
+                    {profile.membership_number || "N/A"}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Expires</p>
+                  <p className="text-sm font-semibold">{getExpirationDate()}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center pt-2 border-t border-primary/20">
+              <div className="flex items-center justify-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-gradient-pride"></div>
+                <p className="text-xs text-muted-foreground">Authorized Member</p>
+                <div className="w-2 h-2 rounded-full bg-gradient-pride"></div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};

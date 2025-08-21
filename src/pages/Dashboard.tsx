@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { MemberIDCard } from "@/components/MemberIDCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, User, Plus, MapPin, Video } from "lucide-react";
+import { Calendar, Clock, User, Plus, MapPin, Video, CreditCard } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -53,7 +54,7 @@ const Dashboard = () => {
     // Fetch user profile with membership number
     const { data: profileData } = await supabase
       .from("profiles")
-      .select("membership_number, display_name, first_name, last_name")
+      .select("membership_number, display_name, first_name, last_name, date_of_birth, created_at")
       .eq("user_id", user.id)
       .single();
     
@@ -162,8 +163,9 @@ const Dashboard = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Quick Actions */}
-            <div className="lg:col-span-1">
+            {/* Quick Actions and Member ID Card */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Quick Actions */}
               <Card className="shadow-pride">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -192,6 +194,28 @@ const Dashboard = () => {
                       Emergency Support
                     </Link>
                   </Button>
+                </CardContent>
+              </Card>
+
+              {/* Member ID Card */}
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-primary" />
+                    Member ID Card
+                  </CardTitle>
+                  <CardDescription>
+                    Your digital membership identification
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {profile ? (
+                    <MemberIDCard profile={profile} userId={user?.id} />
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      Loading profile...
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
