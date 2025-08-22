@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Camera, Printer, Upload, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addYears } from "date-fns";
+import companyLogo from "@/assets/company-logo.png";
 
 interface MemberIDCardProps {
   profile: {
@@ -32,17 +33,47 @@ export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
   const loadMemberPhoto = async () => {
     try {
       setLoading(true);
-      const { data } = supabase.storage
-        .from('member-photos')
-        .getPublicUrl(`${userId}/profile-photo`);
       
-      // Check if the image exists by trying to load it
-      const img = new Image();
-      img.onload = () => setPhotoUrl(data.publicUrl);
-      img.onerror = () => setPhotoUrl(null);
-      img.src = data.publicUrl;
+      // List all files in the user's folder to find the correct extension
+      const { data: files, error: listError } = await supabase.storage
+        .from('member-photos')
+        .list(`${userId}/`);
+      
+      if (listError || !files || files.length === 0) {
+        console.log('No photos found for user:', userId);
+        setPhotoUrl(null);
+        return;
+      }
+      
+      // Find the profile photo file
+      const profilePhoto = files.find(file => file.name.startsWith('profile-photo'));
+      
+      if (profilePhoto) {
+        const { data } = supabase.storage
+          .from('member-photos')
+          .getPublicUrl(`${userId}/${profilePhoto.name}`);
+        
+        // Add timestamp to prevent caching issues
+        const photoUrlWithTimestamp = `${data.publicUrl}?t=${Date.now()}`;
+        
+        // Verify the image loads
+        const img = new Image();
+        img.onload = () => {
+          console.log('Photo loaded successfully:', photoUrlWithTimestamp);
+          setPhotoUrl(photoUrlWithTimestamp);
+        };
+        img.onerror = () => {
+          console.error('Failed to load photo:', photoUrlWithTimestamp);
+          setPhotoUrl(null);
+        };
+        img.src = photoUrlWithTimestamp;
+      } else {
+        console.log('No profile photo found for user:', userId);
+        setPhotoUrl(null);
+      }
     } catch (error) {
       console.error('Error loading photo:', error);
+      setPhotoUrl(null);
     } finally {
       setLoading(false);
     }
@@ -159,6 +190,22 @@ export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
             print-color-adjust: exact;
           }
           
+          .id-card-print-area::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 40px;
+            height: 40px;
+            background-image: url('${companyLogo}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.8;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          
           .id-card-print-area img {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -219,7 +266,15 @@ export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
       />
 
       {/* ID Card */}
-      <Card className="id-card-print-area w-full max-w-md mx-auto shadow-pride border-4 border-primary bg-gradient-pride">
+      <Card className="id-card-print-area w-full max-w-md mx-auto shadow-pride border-4 border-primary bg-gradient-pride relative">
+        {/* Company Logo */}
+        <div className="absolute top-2 right-2 w-10 h-10 opacity-80 no-print">
+          <img 
+            src={companyLogo} 
+            alt="Company Logo" 
+            className="w-full h-full object-contain"
+          />
+        </div>
         <CardContent className="p-4 bg-white/95 backdrop-blur-sm m-1 rounded-lg">
           <div className="space-y-3">
             {/* Header */}
