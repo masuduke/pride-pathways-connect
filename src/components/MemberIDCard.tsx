@@ -144,8 +144,37 @@ export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
             top: 0;
             width: 3.375in;
             height: 2.125in;
-            border: 2px solid #000;
-            background: white;
+            border: 3px solid hsl(280 100% 45%);
+            background: linear-gradient(135deg, 
+              hsl(0 100% 60%) 0%,
+              hsl(30 100% 55%) 16.66%,
+              hsl(60 100% 50%) 33.33%,
+              hsl(120 100% 40%) 50%,
+              hsl(200 100% 50%) 66.66%,
+              hsl(280 100% 45%) 83.33%,
+              hsl(320 100% 50%) 100%
+            );
+            color: white;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          
+          .id-card-print-area img {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          
+          .id-card-print-area .member-photo {
+            background: white !important;
+            border: 2px solid white !important;
+          }
+          
+          .id-card-print-area .print-text-white {
+            color: white !important;
+          }
+          
+          .id-card-print-area .print-text-shadow {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
           }
           
           .no-print {
@@ -190,23 +219,23 @@ export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
       />
 
       {/* ID Card */}
-      <Card className="id-card-print-area w-full max-w-md mx-auto shadow-pride border-2 border-primary/20 bg-gradient-subtle">
-        <CardContent className="p-4">
+      <Card className="id-card-print-area w-full max-w-md mx-auto shadow-pride border-4 border-primary bg-gradient-pride">
+        <CardContent className="p-4 bg-white/95 backdrop-blur-sm m-1 rounded-lg">
           <div className="space-y-3">
             {/* Header */}
-            <div className="text-center border-b border-primary/20 pb-2">
-              <h3 className="text-lg font-bold text-primary">RONGDUNO</h3>
-              <p className="text-xs text-muted-foreground">Member ID Card</p>
+            <div className="text-center border-b-2 border-primary pb-2">
+              <h3 className="text-lg font-bold text-primary print-text-white print-text-shadow">RONGDUNO</h3>
+              <p className="text-xs text-primary/80 print-text-white">LGBT+ Health & Community Member</p>
             </div>
 
             {/* Photo and Info Section */}
             <div className="flex items-center gap-4">
               {/* Photo */}
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 border-2 border-primary/20 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                <div className="member-photo w-20 h-20 border-3 border-primary rounded-lg overflow-hidden bg-gradient-subtle flex items-center justify-center shadow-glow">
                   {loading ? (
-                    <div className="animate-pulse bg-muted-foreground/20 w-full h-full flex items-center justify-center">
-                      <User className="h-8 w-8 text-muted-foreground" />
+                    <div className="animate-pulse bg-primary/20 w-full h-full flex items-center justify-center">
+                      <User className="h-8 w-8 text-primary" />
                     </div>
                   ) : photoUrl ? (
                     <img
@@ -215,7 +244,7 @@ export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="text-muted-foreground">
+                    <div className="text-primary">
                       <User className="h-8 w-8" />
                     </div>
                   )}
@@ -225,42 +254,51 @@ export const MemberIDCard = ({ profile, userId }: MemberIDCardProps) => {
               {/* Member Info */}
               <div className="flex-1 space-y-1">
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Name</p>
-                  <p className="text-sm font-semibold">{getDisplayName()}</p>
+                  <p className="text-xs text-primary/70 print-text-white uppercase tracking-wide font-semibold">Name</p>
+                  <p className="text-sm font-bold text-primary print-text-white print-text-shadow">{getDisplayName()}</p>
                 </div>
                 
                 {profile.date_of_birth && (
                   <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide">DOB</p>
-                    <p className="text-sm">{format(new Date(profile.date_of_birth), "MM/dd/yyyy")}</p>
+                    <p className="text-xs text-primary/70 print-text-white uppercase tracking-wide font-semibold">DOB</p>
+                    <p className="text-sm font-semibold text-primary print-text-white print-text-shadow">{format(new Date(profile.date_of_birth), "MM/dd/yyyy")}</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Membership Details */}
-            <div className="space-y-2 pt-2 border-t border-primary/20">
+            <div className="space-y-2 pt-2 border-t-2 border-primary/30">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Member #</p>
-                  <p className="text-sm font-mono font-bold text-primary">
+                  <p className="text-xs text-primary/70 print-text-white uppercase tracking-wide font-semibold">Member #</p>
+                  <p className="text-sm font-mono font-bold text-primary print-text-white print-text-shadow">
                     {profile.membership_number || "N/A"}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Expires</p>
-                  <p className="text-sm font-semibold">{getExpirationDate()}</p>
+                  <p className="text-xs text-primary/70 print-text-white uppercase tracking-wide font-semibold">Expires</p>
+                  <p className="text-sm font-bold text-primary print-text-white print-text-shadow">{getExpirationDate()}</p>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="text-center pt-2 border-t border-primary/20">
-              <div className="flex items-center justify-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-gradient-pride"></div>
-                <p className="text-xs text-muted-foreground">Authorized Member</p>
-                <div className="w-2 h-2 rounded-full bg-gradient-pride"></div>
+            <div className="text-center pt-2 border-t-2 border-primary/30">
+              <div className="flex items-center justify-center gap-2">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                </div>
+                <p className="text-xs text-primary/80 print-text-white font-semibold">Proud • United • Strong</p>
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                </div>
               </div>
+              <p className="text-xs text-primary/60 print-text-white mt-1">Pride in Health & Community</p>
             </div>
           </div>
         </CardContent>
