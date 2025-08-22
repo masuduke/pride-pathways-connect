@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MemberIDCard } from "@/components/MemberIDCard";
+import { SupportingLetter } from "@/components/SupportingLetter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, User, Plus, MapPin, Video, CreditCard } from "lucide-react";
+import { Calendar, Clock, User, Plus, MapPin, Video, CreditCard, FileText } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -211,6 +212,28 @@ const Dashboard = () => {
                 <CardContent>
                   {profile ? (
                     <MemberIDCard profile={profile} userId={user?.id} />
+                  ) : (
+                    <div className="text-center py-4 text-muted-foreground">
+                      Loading profile...
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Supporting Letter */}
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    Supporting Letter
+                  </CardTitle>
+                  <CardDescription>
+                    Generate official supporting letter for asylum applications
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {profile && user ? (
+                    <SupportingLetter profile={profile} userId={user.id} />
                   ) : (
                     <div className="text-center py-4 text-muted-foreground">
                       Loading profile...
