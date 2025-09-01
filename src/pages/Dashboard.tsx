@@ -41,7 +41,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     checkUser();
-    fetchAppointments();
   }, []);
 
   const checkUser = async () => {
@@ -60,9 +59,14 @@ const Dashboard = () => {
       .single();
     
     setProfile(profileData);
+    
+    // Fetch appointments after user is confirmed
+    await fetchAppointments(user.id);
   };
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (userId?: string) => {
+    const currentUserId = userId || user?.id;
+    if (!currentUserId) return;
     try {
       const { data, error } = await supabase
         .from("appointments")
