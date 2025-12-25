@@ -24,7 +24,9 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
 
-    const { amount, serviceId, appointmentData } = await req.json();
+    const { amount, serviceId, appointmentData, durationMinutes } = await req.json();
+
+    console.log("Processing payment:", { amount, serviceId, durationMinutes, user: user.email });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
@@ -46,8 +48,8 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: { 
-              name: `Healthcare Service - ${appointmentData.serviceName}`,
-              description: `Appointment on ${appointmentData.date} at ${appointmentData.time}`
+              name: `Therapy Session - ${durationMinutes || 60} minutes`,
+              description: `${appointmentData.serviceName} on ${appointmentData.date} at ${appointmentData.time}`
             },
             unit_amount: amount * 100, // Convert to cents
           },
@@ -56,10 +58,11 @@ serve(async (req) => {
       ],
       mode: "payment",
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/book-service/${serviceId}`,
+      cancel_url: `${req.headers.get("origin")}/book/mental-health`,
       metadata: {
         serviceId,
         userId: user.id,
+        durationMinutes: (durationMinutes || 60).toString(),
         appointmentData: JSON.stringify(appointmentData)
       }
     });
